@@ -103,9 +103,22 @@ class PreferencesWindow(ChildTopWindow, FControl, LoadSave):
         for plugin in self.configs:            
             plugin.on_load()
 
-    def on_save(self, hide=False):
+    def on_save(self):
         pass
-                
+    
+    def on_apply(self, hide=True):
+        for plugin in self.configs:
+            plugin.on_save()
+        FC().save()
+        if hide:
+            self.hide_window()
+        else:
+            bean = self.navigation.get_selected_bean() 
+            self.hide()
+            if bean:
+                self.populate_config_category(bean.text)
+            self.show()
+
     def hide_window(self, *a):
         self.hide()
         self.navigation.set_cursor_on_cell(0)
@@ -131,14 +144,14 @@ class PreferencesWindow(ChildTopWindow, FControl, LoadSave):
 
         button_apply = gtk.Button(_("Apply"))
         button_apply.set_size_request(100, -1)
-        button_apply.connect("clicked", lambda * a:self.on_save())
+        button_apply.connect("clicked", lambda * a:self.on_apply())
         button_apply.show()
         
         label = gtk.Label("       ")
         
         button_ok = gtk.Button(_("OK"))
         button_ok.set_size_request(100, -1)
-        button_ok.connect("clicked", lambda * a:self.on_save(True))
+        button_ok.connect("clicked", lambda * a:self.on_apply(True))
         button_ok.show()
 
         button_cancel = gtk.Button(_("Cancel"))
